@@ -1,0 +1,26 @@
+# The `service` block is the name of the service
+service: alexa-pr-notifier
+
+# The `provider` block defines where your service will be deployed
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: us-east-1
+  memorySize: 256
+  timeout: 5
+
+
+# The `functions` block defines what code to deploy
+functions:
+  github:
+    handler: handler.execute
+    # Get environment variables from SSM
+    environment:
+      GITHUB_TOKEN: ${ssm:/github/GITHUB_TOKEN, env:GITHUB_TOKEN}
+
+    # The `events` block defines how to trigger the handler.execute code
+    events:
+      - http:
+          path: pr-notifier
+          method: get
+          cors: true
